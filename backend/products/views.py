@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, permissions, authentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -8,11 +8,15 @@ from django.shortcuts import get_object_or_404
 
 from products.models import Product
 from products.serializers import ProductSerializer
+from products.permissions import IsStaffEditorPermission
+
+# Class based function CREATE object
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         print(serializer.validated_data)
@@ -23,11 +27,15 @@ class ProductCreateAPIView(generics.CreateAPIView):
         serializer.save(content=content)
         # Or can send a Django signal
 
+# Class based function GET object
+
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # lookup_field = 'pk'
+
+# Class based function UPDATE object
 
 
 class ProductUpdateAPIView(generics.UpdateAPIView):
@@ -40,6 +48,8 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
         if not instance.content:
             instance.content = instance.title
 
+# Class based function DELETE object
+
 
 class ProductDestroyAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
@@ -49,10 +59,15 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     def perfom_destroy(self, instance):
         super().perform_destroy(instance)
 
+# Class based function LIST objects
+
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [IsStaffEditorPermission,
+                          permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         print(serializer.validated_data)
@@ -61,6 +76,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         if content is None:
             content = title
         serializer.save(content=content)
+
+# Complete CRUD with mixing view
 
 
 class ProductMixinView(mixins.ListModelMixin,
