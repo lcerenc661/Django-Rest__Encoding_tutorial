@@ -1,6 +1,6 @@
 import requests
 
-endpoint = "http://localhost:8000/api/products/6/"
+endpoint = "http://localhost:8000/api/products/656656/"
 
 get_response = requests.get(endpoint)
 
