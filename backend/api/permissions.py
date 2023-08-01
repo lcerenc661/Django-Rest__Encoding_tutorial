@@ -31,6 +31,3 @@ class IsStaffEditorPermission(
         #         return True
         #     return False
         # return False
-
-    def has_object_permission(self, request, view, obj):
-        return super().has_object_permission(request, view, obj)

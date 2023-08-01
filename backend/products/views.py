@@ -1,22 +1,23 @@
-from rest_framework import generics, mixins, permissions, authentication
+from rest_framework import generics, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 # from django.http import Http404
 from django.shortcuts import get_object_or_404
 
+from api.mixings import StaffEditorPermissionMixin
 
 from products.models import Product
 from products.serializers import ProductSerializer
-from products.permissions import IsStaffEditorPermission
 
 # Class based function CREATE object
 
 
-class ProductCreateAPIView(generics.CreateAPIView):
+class ProductCreateAPIView(
+        StaffEditorPermissionMixin,
+        generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         print(serializer.validated_data)
@@ -38,7 +39,9 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 # Class based function UPDATE object
 
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(
+        StaffEditorPermissionMixin,
+        generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
@@ -51,7 +54,8 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
 # Class based function DELETE object
 
 
-class ProductDestroyAPIView(generics.DestroyAPIView):
+class ProductDestroyAPIView(StaffEditorPermissionMixin,
+                            generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
@@ -62,12 +66,15 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
 # Class based function LIST objects
 
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(
+        StaffEditorPermissionMixin,
+        generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [IsStaffEditorPermission,
-                          permissions.IsAdminUser]
+    # authentication_classes = [
+    #     authentication.SessionAuthentication,
+    #     TokenAuthentication,
+    #     ]
 
     def perform_create(self, serializer):
         print(serializer.validated_data)
