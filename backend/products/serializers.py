@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from products.models import Product
+from products.validators import validate_title_no_hello, unique_product_title
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -10,7 +11,10 @@ class ProductSerializer(serializers.ModelSerializer):
     other_url = serializers.HyperlinkedIdentityField(
         view_name='product-detail',
         lookup_field='pk')
-    email = serializers.EmailField(write_only=True)
+    # email = serializers.EmailField(write_only=True)
+    title = serializers.CharField(validators=[validate_title_no_hello,
+                                              unique_product_title])
+    name = serializers.CharField(source='title', read_only=True)
 
     class Meta:
         model = Product
@@ -18,15 +22,26 @@ class ProductSerializer(serializers.ModelSerializer):
             'url',
             'edit_url',
             'other_url',
-            'email',
+            # 'email',
             'pk',
             'title',
+            'name',
             'content',
             'price',
             'sale_price',
             'discount',
         ]
-     # Create method
+
+    # def validate_title(self, value):
+    #     request = self.context.get('request')
+    #     user = request.user
+    #     queryset = Product.objects.filter(user=user, title__iexact=value)
+    #     if queryset.exists():
+    #         raise serializers.ValidationError(
+    #             f"{value} is already a product name.")
+    #     return value
+
+    # # Create method
 
     # def create(self, validated_data):
     #     # email = validated_data.pop('email')
@@ -39,7 +54,6 @@ class ProductSerializer(serializers.ModelSerializer):
     #     email = validated_data.pop('email')
     #     instance.title = validated_data.get('title')
     #     return super().update(instance, validated_data)
-    
 
     def get_url(self, obj):
         request = self.context.get('request')
