@@ -5,7 +5,9 @@ from rest_framework.response import Response
 # from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from api.mixings import StaffEditorPermissionMixin
+from api.mixings import (
+    StaffEditorPermissionMixin,
+    UserQuerysetMixin)
 
 from products.models import Product
 from products.serializers import ProductSerializer
@@ -67,6 +69,7 @@ class ProductDestroyAPIView(StaffEditorPermissionMixin,
 
 
 class ProductListCreateAPIView(
+        UserQuerysetMixin,
         StaffEditorPermissionMixin,
         generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -78,14 +81,23 @@ class ProductListCreateAPIView(
 
     def perform_create(self, serializer):
         print(serializer.validated_data)
-        email = serializer.validated_data.pop('email')
-        print(email)
+        # email = serializer.validated_data.pop('email')
+        # print(email)
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
         if content is None:
             content = title
-        serializer.save(content=content)
+        serializer.save(user=self.request.user, content=content)
 
+    # def get_queryset(self, *args, **kwargs):
+    #     queryset = super().get_queryset(*args, **kwargs) 
+    #     request = self.request
+    #     user = request.user
+    #     if not user.is_authenticated:
+    #         return Product.objects.none()
+    #     print(request.user)
+    #     return queryset.filter(user=request.user)
+        
 # Complete CRUD with mixing view
 
 
