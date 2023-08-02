@@ -2,13 +2,13 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from products.models import Product
 from products.validators import validate_title_no_hello, unique_product_title
-from api.serializers import UserPublicSerializer
+from api.serializers import UserPublicSerializer, ProductInlineSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
     owner = UserPublicSerializer(source='user', read_only=True)
-    my_user_data = serializers.SerializerMethodField(read_only=True)
-    discount = serializers.SerializerMethodField(read_only=True)
+    # related_products = ProductInlineSerializer(
+    #     source='user.product_set.all', read_only=True, many=True)
     url = serializers.SerializerMethodField(read_only=True)
     edit_url = serializers.SerializerMethodField(read_only=True)
     other_url = serializers.HyperlinkedIdentityField(
@@ -23,6 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'owner',
+            # 'related_products',
             'url',
             'edit_url',
             'other_url',
@@ -33,8 +34,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'content',
             'price',
             'sale_price',
-            'discount',
-            'my_user_data'
         ]
 
     def get_my_user_data(self, obj):
@@ -43,6 +42,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return {
             "username": obj.user.username
         }
+
 
     # def validate_title(self, value):
     #     request = self.context.get('request')
@@ -79,7 +79,7 @@ class ProductSerializer(serializers.ModelSerializer):
             return None
         return reverse("product-edit", kwargs={"pk": obj.pk}, request=request)
 
-    def get_discount(self, obj):
-        if not hasattr(obj, 'id'):
-            return None
-        return obj.get_discount()
+    # def get_discount(self, obj):
+    #     if not hasattr(obj, 'id'):
+    #         return None
+    #     return obj.get_discount()
