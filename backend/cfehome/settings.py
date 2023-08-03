@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third party API services
+    # 'algoliasearch_django',
+    # Third partys packages
     'rest_framework',
     'rest_framework.authtoken',
+
+    # Internal Apps
     'api',
     'products',
     'search',
@@ -138,3 +143,9 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ALGOLIA = {
+#     'APPLICATION_ID': '',
+#     'API_KEY': '',
+#     'INDEX_PREFIX': 'cfe',
+# }

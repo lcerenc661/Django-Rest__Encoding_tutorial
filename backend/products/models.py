@@ -1,10 +1,15 @@
 from django.db import models
 from django.conf import settings
-from django.db.models.query import QuerySet
+# from django.db.models.query import QuerySet
 from django.db.models import Q
+
+import random
+
 User = settings.AUTH_USER_MODEL
 
 # Create your models here.
+
+TAGS_MODEL_VALUES = ['electronics', 'cars', 'boats', 'movies', 'cameras']
 
 
 class ProductQuerySet(models.QuerySet):
@@ -35,8 +40,14 @@ class Product(models.Model):
     content = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=2, default=99.99)
     public = models.BooleanField(default=True)
-    
+
     objects = ProductManager()
+
+    def is_public(self):
+        return self.public
+
+    def get_tag_list(self):
+        return [random.choice(TAGS_MODEL_VALUES)]
 
     @property
     def sale_price(self):
