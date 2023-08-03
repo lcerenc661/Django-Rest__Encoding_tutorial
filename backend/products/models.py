@@ -42,6 +42,10 @@ class Product(models.Model):
     public = models.BooleanField(default=True)
 
     objects = ProductManager()
+    
+    @property
+    def body(self):
+        return self.content
 
     def is_public(self):
         return self.public
